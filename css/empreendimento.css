@@ -79,8 +79,18 @@
 .emp-hero__tagline {
   font-size: 1.1rem;
   color: rgba(255,255,255,.85);
-  margin-bottom: 28px;
+  margin-bottom: 10px;
   font-style: italic;
+}
+.emp-hero__price {
+  display: inline-block;
+  background: rgba(234,114,61,.85);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 5px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
 }
 .emp-hero__details {
   display: flex;
