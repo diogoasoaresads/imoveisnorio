@@ -513,9 +513,15 @@
 
     <!-- ===== LEADS ===== -->
     <section class="page" id="leadsPage">
-      <div class="page-header">
-        <h1>Gestão de Leads</h1>
-        <p>Todos os leads capturados pelo portal</p>
+      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <h1>Gestão de Leads</h1>
+          <p>Todos os leads capturados pelo portal</p>
+        </div>
+        <button class="btn btn-primary" onclick="exportCSV()" style="display:flex;align-items:center;gap:8px;padding:10px 20px;font-size:.95rem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar Leads (CSV)
+        </button>
       </div>
 
       <div class="card">
