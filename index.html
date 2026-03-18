@@ -166,6 +166,8 @@
                 <option value="caminhos-guanabara">Caminhos da Guanabara – Niterói</option>
                 <option value="farol-guanabara">Farol da Guanabara – Porto</option>
                 <option value="residencial-pixinguinha">Res. Pixinguinha – Porto</option>
+                <option value="cury-niteroi">🔔 Cury Niterói – Em Breve</option>
+                <option value="cury-piedade">🔔 Cury Piedade – Em Breve</option>
               </select>
             </div>
             <button type="submit" class="btn btn--primary btn--full">
@@ -198,8 +200,8 @@
         <span class="stat-item__label">Famílias atendidas</span>
       </div>
       <div class="stat-item">
-        <span class="stat-item__number">6</span>
-        <span class="stat-item__label">Empreendimentos ativos</span>
+        <span class="stat-item__number">8</span>
+        <span class="stat-item__label">Empreendimentos</span>
       </div>
       <div class="stat-item">
         <span class="stat-item__number">R$55mil</span>
@@ -224,6 +226,7 @@
         <button class="filter-tab" data-filter="iraja" role="tab" aria-selected="false">Irajá</button>
         <button class="filter-tab" data-filter="niteroi" role="tab" aria-selected="false">Niterói</button>
         <button class="filter-tab" data-filter="porto" role="tab" aria-selected="false">Porto</button>
+        <button class="filter-tab" data-filter="piedade" role="tab" aria-selected="false">Piedade</button>
       </div>
 
       <div class="cards-grid" id="cardsGrid">
@@ -359,6 +362,50 @@
             </div>
           </div>
         </article>
+        </article>
+
+        <!-- Card 7: Cury Niterói – Em Breve -->
+        <article class="emp-card emp-card--em-breve" data-bairro="niteroi" aria-label="Cury Niterói – Em Breve">
+          <div class="emp-card__img-wrap">
+            <div class="emp-card__img emp-card__img--gradient" style="background: linear-gradient(135deg, #00447d 0%, #006bad 60%, #ea723d 100%);"></div>
+            <span class="emp-card__tag">Niterói · RJ</span>
+            <span class="emp-card__badge emp-card__badge--em-breve">Em Breve</span>
+          </div>
+          <div class="emp-card__body">
+            <h3 class="emp-card__name">Cury Niterói</h3>
+            <p class="emp-card__desc">Novo lançamento Cury em Niterói. Qualidade de vida, fácil acesso ao Rio, praias próximas e a melhor infraestrutura do estado. Faça seu pré-cadastro!</p>
+            <ul class="emp-card__highlights">
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Niterói, Rio de Janeiro</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Lançamento em breve</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Condições exclusivas</li>
+            </ul>
+            <div class="emp-card__footer">
+              <div class="emp-card__price"><span class="price-from">Antecipe o</span><span class="price-value" style="font-size:.9rem;">Lançamento</span></div>
+              <a href="/empreendimentos/cury-niteroi" class="btn btn--primary btn--sm">Me Cadastrar</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 8: Cury Piedade – Em Breve -->
+        <article class="emp-card emp-card--em-breve" data-bairro="piedade" aria-label="Cury Piedade – Em Breve">
+          <div class="emp-card__img-wrap">
+            <div class="emp-card__img emp-card__img--gradient" style="background: linear-gradient(135deg, #00447d 0%, #1a5c94 60%, #ea723d 100%);"></div>
+            <span class="emp-card__tag">Piedade · RJ</span>
+            <span class="emp-card__badge emp-card__badge--em-breve">Em Breve</span>
+          </div>
+          <div class="emp-card__body">
+            <h3 class="emp-card__name">Cury Piedade</h3>
+            <p class="emp-card__desc">Novo lançamento Cury na Zona Norte do Rio. Localização estratégica com metrô, BRT e grandes vias. MCMV com as melhores condições. Pré-cadastre-se!</p>
+            <ul class="emp-card__highlights">
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Piedade, Zona Norte – RJ</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Lançamento em breve</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Minha Casa Minha Vida</li>
+            </ul>
+            <div class="emp-card__footer">
+              <div class="emp-card__price"><span class="price-from">Antecipe o</span><span class="price-value" style="font-size:.9rem;">Lançamento</span></div>
+              <a href="/empreendimentos/cury-piedade" class="btn btn--primary btn--sm">Me Cadastrar</a>
+            </div>
+          </div>
         </article>
 
       </div><!-- /cards-grid -->
@@ -526,6 +573,8 @@
                 <option value="caminhos-guanabara">Caminhos da Guanabara – Niterói</option>
                 <option value="farol-guanabara">Farol da Guanabara – Porto</option>
                 <option value="residencial-pixinguinha">Res. Pixinguinha – Porto</option>
+                <option value="cury-niteroi">🔔 Cury Niterói – Em Breve</option>
+                <option value="cury-piedade">🔔 Cury Piedade – Em Breve</option>
               </select>
             </div>
           </div>
