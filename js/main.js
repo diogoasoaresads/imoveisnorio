@@ -136,7 +136,6 @@
       btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px"></span>Enviando...';
       btn.disabled = true;
 
-      // Add spinner keyframe if not present
       if (!document.getElementById('spin-style')) {
         const style = document.createElement('style');
         style.id = 'spin-style';
@@ -144,16 +143,16 @@
         document.head.appendChild(style);
       }
 
-      // Collect form data
       const data = Object.fromEntries(new FormData(form).entries());
 
       try {
-        /*
-         * INTEGRAÇÃO: Substitua o bloco abaixo pelo endpoint real
-         * Exemplo: await fetch('/api/leads', { method: 'POST', body: JSON.stringify(data) })
-         * Ou integre com RD Station, HubSpot, Leadlovers, etc.
-         */
-        await simulateSubmit(data);
+        const res = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Erro ao enviar. Tente novamente.');
 
         form.reset();
         showModal();
@@ -170,18 +169,12 @@
 
       } catch (err) {
         console.error('Erro ao enviar formulário:', err);
-        alert('Ocorreu um erro. Por favor, tente novamente ou entre em contato pelo WhatsApp.');
+        alert(err.message || 'Ocorreu um erro. Entre em contato pelo WhatsApp.');
       } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
       }
     });
-  }
-
-  // Simula envio (remover em produção)
-  function simulateSubmit(data) {
-    console.log('Lead capturado:', data);
-    return new Promise(resolve => setTimeout(resolve, 1200));
   }
 
   document.querySelectorAll('.lead-form').forEach(handleFormSubmit);
@@ -238,5 +231,26 @@
       liveRegion.textContent = `Exibindo ${visible} empreendimento${visible !== 1 ? 's' : ''} em ${label}.`;
     });
   });
+
+  /* ---- Dynamic WhatsApp config from API ---- */
+  fetch('/api/public-config')
+    .then(r => r.json())
+    .then(cfg => {
+      if (!cfg.whatsapp_number) return;
+      const num = cfg.whatsapp_number.replace(/\D/g, '');
+      const msg = encodeURIComponent(cfg.whatsapp_message || '');
+      const waUrl = `https://wa.me/${num}?text=${msg}`;
+
+      // Update all WhatsApp links on the page
+      document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+        a.href = waUrl;
+      });
+
+      // Update all phone references in header/CTA if matching default
+      document.querySelectorAll('a[href^="tel:"]').forEach(a => {
+        // Keep as-is (phone number configured separately)
+      });
+    })
+    .catch(() => { /* Silent fail — links retain default values */ });
 
 })();
