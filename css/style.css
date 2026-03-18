@@ -593,6 +593,26 @@ h1, h2, h3, h4 {
   background: var(--color-primary);
   color: var(--color-white);
 }
+.emp-card__badge--em-breve {
+  background: #7c3aed;
+  color: #fff;
+  animation: eb-pulse-card 2s ease-in-out infinite;
+}
+@keyframes eb-pulse-card {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(124,58,237,0); }
+}
+
+/* Em Breve card – gradient image placeholder */
+.emp-card__img--gradient {
+  background-size: cover;
+}
+
+/* Em Breve card button override */
+.emp-card--em-breve .btn--primary {
+  padding: 8px 14px;
+  font-size: .78rem;
+}
 
 .emp-card__body {
   padding: 24px;

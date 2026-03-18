@@ -785,6 +785,7 @@ app.post('/api/test/whatsapp', auth, async (_req, res) => {
 app.get('/empreendimentos/:slug', (req, res) => {
   const emp = empreendimentos.find(e => e.slug === req.params.slug);
   if (!emp) return res.status(404).sendFile(path.join(__dirname, 'index.html'));
+  if (emp.emBreve) return res.render('em-breve', { emp });
   const others = empreendimentos.filter(e => e.slug !== emp.slug).slice(0, 5);
   res.render('empreendimento', { emp, others });
 });
