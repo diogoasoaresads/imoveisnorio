@@ -393,6 +393,142 @@
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .form-grid { grid-template-columns: 1fr; }
     }
+
+    /* ============================================================
+       KANBAN
+    ============================================================ */
+    .kanban-toolbar {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      padding: 14px 0; margin-bottom: 20px;
+    }
+    .kanban-toolbar input,
+    .kanban-toolbar select {
+      padding: 8px 12px; border: 1.5px solid var(--border);
+      border-radius: var(--radius); font-size: .85rem; outline: none;
+      transition: border-color .2s; background: #fff; height: 36px;
+    }
+    .kanban-toolbar input:focus,
+    .kanban-toolbar select:focus { border-color: var(--red); }
+    .kanban-toolbar input[type=search] { min-width: 200px; }
+    .kanban-toolbar input[type=date]   { min-width: 140px; }
+
+    .kanban-board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      align-items: start;
+      min-height: calc(100vh - 260px);
+    }
+
+    .kb-col {
+      background: #f0f4f8;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      min-height: 200px;
+      transition: background .2s;
+    }
+    .kb-col.drag-over { background: #e2eaf3; outline: 2px dashed var(--red); }
+
+    .kb-col__header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 14px 10px;
+    }
+    .kb-col__dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .kb-col__title {
+      font-size: .85rem; font-weight: 700; color: var(--navy);
+      flex: 1; cursor: default;
+    }
+    .kb-col__count {
+      font-size: .75rem; font-weight: 600; padding: 2px 8px;
+      border-radius: 100px; background: rgba(0,0,0,.07); color: var(--navy);
+    }
+    .kb-col__edit {
+      opacity: 0; transition: opacity .15s;
+      color: var(--gray); padding: 2px; border-radius: 4px;
+    }
+    .kb-col:hover .kb-col__edit { opacity: 1; }
+    .kb-col__edit:hover { background: var(--border); color: var(--navy); }
+
+    .kb-col__cards {
+      flex: 1;
+      padding: 0 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .kb-card {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      cursor: grab;
+      transition: box-shadow .2s, transform .15s;
+      border-left: 3px solid transparent;
+      user-select: none;
+    }
+    .kb-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .kb-card:active { cursor: grabbing; }
+    .kb-card.dragging { opacity: .45; transform: scale(.98); }
+
+    .kb-card--novo         { border-left-color: #2563eb; }
+    .kb-card--em_atendimento { border-left-color: #d97706; }
+    .kb-card--convertido   { border-left-color: #16a34a; }
+    .kb-card--perdido      { border-left-color: #dc2626; }
+
+    .kb-card__name {
+      font-size: .875rem; font-weight: 700; color: var(--navy);
+      margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .kb-card__phone {
+      font-size: .78rem; color: var(--red); margin-bottom: 6px;
+    }
+    .kb-card__interest {
+      font-size: .72rem; color: var(--gray);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 8px;
+    }
+    .kb-card__footer {
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    }
+    .kb-card__date { font-size: .7rem; color: #94a3b8; }
+    .kb-card__actions { display: flex; gap: 4px; }
+    .kb-card__btn {
+      font-size: .7rem; padding: 3px 8px; border-radius: 4px;
+      font-weight: 600; transition: all .15s;
+    }
+    .kb-card__btn--detail { background: var(--gray-lt); color: var(--navy); border: 1px solid var(--border); }
+    .kb-card__btn--detail:hover { background: var(--border); }
+    .kb-card__btn--wa { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .kb-card__btn--wa:hover { background: #bbf7d0; }
+
+    .kb-col__empty {
+      text-align: center; padding: 24px 12px; color: #94a3b8;
+      font-size: .8rem;
+    }
+
+    /* edit-label modal */
+    .edit-label-modal {
+      display: none; position: fixed; inset: 0; z-index: 600;
+      background: rgba(0,0,0,.45); align-items: center; justify-content: center;
+    }
+    .edit-label-modal.open { display: flex; }
+    .edit-label-box {
+      background: #fff; border-radius: 12px; padding: 28px;
+      width: 100%; max-width: 380px; box-shadow: var(--shadow-md);
+      animation: fadeUp .2s ease;
+    }
+    .edit-label-box h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+
+    @media (max-width: 1200px) {
+      .kanban-board { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .kanban-board { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -440,6 +576,10 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
         Leads
         <span id="newLeadsBadge" style="margin-left:auto;background:var(--red);color:#fff;border-radius:100px;font-size:.7rem;padding:2px 8px;display:none"></span>
+      </div>
+      <div class="nav-item" data-page="kanban">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="5" height="15" rx="1"/></svg>
+        Kanban
       </div>
       <div class="nav-item admin-only" data-page="attendants">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
@@ -550,6 +690,8 @@
             <option value="caminhos-guanabara">Caminhos da Guanabara</option>
             <option value="farol-guanabara">Farol da Guanabara</option>
             <option value="residencial-pixinguinha">Res. Pixinguinha</option>
+            <option value="cury-niteroi">Cury Niterói (Em Breve)</option>
+            <option value="cury-piedade">Cury Piedade (Em Breve)</option>
           </select>
           <button class="btn btn-secondary btn-sm" onclick="exportExcel()">⬇ Exportar Excel</button>
         </div>
@@ -571,6 +713,44 @@
           <button id="prevPage" onclick="changePage(-1)">‹ Anterior</button>
           <button id="nextPage" onclick="changePage(1)">Próxima ›</button>
         </div>
+      </div>
+    </section>
+
+    <!-- ===== KANBAN ===== -->
+    <section class="page" id="kanbanPage">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+        <div>
+          <h1>Kanban de Leads</h1>
+          <p>Arraste os cards entre colunas para atualizar o status</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="loadKanban()" title="Atualizar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          Atualizar
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="kanban-toolbar">
+        <input type="search" id="kbSearch" placeholder="Buscar nome ou telefone…" oninput="debounceKanban()" />
+        <input type="date"   id="kbDateFrom" title="De" onchange="renderKanban()" />
+        <input type="date"   id="kbDateTo"   title="Até" onchange="renderKanban()" />
+        <select id="kbInterest" onchange="renderKanban()">
+          <option value="all">Todos empreendimentos</option>
+          <option value="luzes-do-rio">Luzes do Rio</option>
+          <option value="residencial-cartola">Residencial Cartola</option>
+          <option value="nova-norte-raizes">Nova Norte Raízes</option>
+          <option value="caminhos-guanabara">Caminhos da Guanabara</option>
+          <option value="farol-guanabara">Farol da Guanabara</option>
+          <option value="residencial-pixinguinha">Res. Pixinguinha</option>
+          <option value="cury-niteroi">Cury Niterói (Em Breve)</option>
+          <option value="cury-piedade">Cury Piedade (Em Breve)</option>
+        </select>
+        <span id="kbTotal" style="font-size:.82rem;color:var(--gray);white-space:nowrap;padding:0 4px;"></span>
+      </div>
+
+      <!-- Board -->
+      <div class="kanban-board" id="kanbanBoard">
+        <!-- Generated by JS -->
       </div>
     </section>
 
@@ -919,6 +1099,22 @@
   </div>
 </div>
 
+<!-- Edit Kanban Label Modal -->
+<div class="edit-label-modal" id="editLabelModal">
+  <div class="edit-label-box">
+    <h3>Renomear Etapa</h3>
+    <div class="field">
+      <label for="editLabelInput">Nome da etapa</label>
+      <input type="text" id="editLabelInput" placeholder="Ex: Aguardando retorno" maxlength="30" />
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-primary" onclick="saveKanbanLabel()">Salvar</button>
+      <button class="btn btn-secondary" onclick="closeEditLabel()">Cancelar</button>
+      <button class="btn btn-danger btn-sm" style="margin-left:auto" onclick="resetKanbanLabel()">Redefinir</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast"></div>
 
@@ -942,6 +1138,8 @@ const INTEREST_LABELS = {
   'caminhos-guanabara':      'Caminhos da Guanabara – Niterói',
   'farol-guanabara':         'Farol da Guanabara – Porto',
   'residencial-pixinguinha': 'Res. Pixinguinha – Porto',
+  'cury-niteroi':            'Cury Niterói – Em Breve',
+  'cury-piedade':            'Cury Piedade – Em Breve',
 };
 const STATUS_LABELS = {
   novo: 'Novo', em_atendimento: 'Em Atendimento', convertido: 'Convertido', perdido: 'Perdido'
@@ -1066,6 +1264,7 @@ function navigate(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === page + 'Page'));
   if (page === 'dashboard')  loadDashboard();
   if (page === 'leads')      { leadsPage = 1; loadLeads(); }
+  if (page === 'kanban')     loadKanban();
   if (page === 'config')     loadConfig();
   if (page === 'attendants') loadAttendants();
   if (page === 'users')      loadUsers();
@@ -1598,6 +1797,202 @@ async function deleteUser(id) {
 document.getElementById('userModal').addEventListener('click', e => {
   if (e.target === document.getElementById('userModal')) closeUserModal();
 });
+
+/* ============================================================
+   KANBAN
+============================================================ */
+const KB_STATUSES = ['novo', 'em_atendimento', 'convertido', 'perdido'];
+const KB_COLORS   = { novo: '#2563eb', em_atendimento: '#d97706', convertido: '#16a34a', perdido: '#dc2626' };
+const KB_DEFAULT_LABELS = { novo: 'Novo', em_atendimento: 'Em Atendimento', convertido: 'Convertido', perdido: 'Perdido' };
+
+let kbAllLeads    = [];    // cache de todos os leads
+let kbDragId      = null;  // id do lead sendo arrastado
+let kbEditStatus  = null;  // status da coluna em edição
+let kbSearchTimer = null;
+
+function getKbLabels() {
+  return Object.assign({}, KB_DEFAULT_LABELS, JSON.parse(localStorage.getItem('kb_labels') || '{}'));
+}
+
+function debounceKanban() {
+  clearTimeout(kbSearchTimer);
+  kbSearchTimer = setTimeout(renderKanban, 350);
+}
+
+async function loadKanban() {
+  document.getElementById('kanbanBoard').innerHTML =
+    '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray)">Carregando leads…</div>';
+  try {
+    // Busca todos os leads (sem paginação) para o kanban
+    const data = await api('GET', '/api/leads?limit=1000&page=1');
+    kbAllLeads = data.leads || [];
+    renderKanban();
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+}
+
+function renderKanban() {
+  const search    = (document.getElementById('kbSearch')?.value || '').trim().toLowerCase();
+  const dateFrom  = document.getElementById('kbDateFrom')?.value;
+  const dateTo    = document.getElementById('kbDateTo')?.value;
+  const interest  = document.getElementById('kbInterest')?.value || 'all';
+
+  // Filtra
+  const filtered = kbAllLeads.filter(l => {
+    if (interest !== 'all' && l.interest !== interest) return false;
+    if (search && !l.name.toLowerCase().includes(search) && !l.phone.includes(search)) return false;
+    if (dateFrom) {
+      const d = new Date(l.created_at);
+      if (d < new Date(dateFrom + 'T00:00:00')) return false;
+    }
+    if (dateTo) {
+      const d = new Date(l.created_at);
+      if (d > new Date(dateTo + 'T23:59:59')) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('kbTotal').textContent = `${filtered.length} lead${filtered.length !== 1 ? 's' : ''}`;
+
+  // Agrupa por status
+  const groups = {};
+  KB_STATUSES.forEach(s => { groups[s] = []; });
+  filtered.forEach(l => {
+    const s = l.status || 'novo';
+    if (groups[s]) groups[s].push(l);
+    else groups['novo'].push(l);
+  });
+
+  const labels = getKbLabels();
+  const board  = document.getElementById('kanbanBoard');
+  board.innerHTML = '';
+
+  KB_STATUSES.forEach(status => {
+    const cards = groups[status];
+    const col   = document.createElement('div');
+    col.className = 'kb-col';
+    col.dataset.status = status;
+
+    // Drag-over handlers
+    col.addEventListener('dragover', (e) => { e.preventDefault(); col.classList.add('drag-over'); });
+    col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
+    col.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      if (kbDragId === null) return;
+      const lead = kbAllLeads.find(l => l.id === kbDragId);
+      if (!lead || lead.status === status) return;
+      try {
+        await api('PUT', `/api/leads/${kbDragId}`, { status, notes: lead.notes || '' });
+        lead.status = status;
+        toast(`Lead movido para "${labels[status]}"`, 'success');
+        renderKanban();
+        loadDashboard();
+      } catch (e) { toast(e.message, 'error'); }
+    });
+
+    col.innerHTML = `
+      <div class="kb-col__header">
+        <span class="kb-col__dot" style="background:${KB_COLORS[status]}"></span>
+        <span class="kb-col__title">${labels[status]}</span>
+        <span class="kb-col__count">${cards.length}</span>
+        <button class="kb-col__edit" onclick="openEditLabel('${status}')" title="Renomear etapa">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+      <div class="kb-col__cards" id="kb-cards-${status}">
+        ${cards.length === 0
+          ? '<div class="kb-col__empty">Nenhum lead aqui</div>'
+          : cards.map(l => buildKbCard(l)).join('')}
+      </div>
+    `;
+    board.appendChild(col);
+
+    // Adiciona eventos de drag nos cards
+    col.querySelectorAll('.kb-card').forEach(card => {
+      const id = parseInt(card.dataset.id);
+      card.addEventListener('dragstart', (e) => {
+        kbDragId = id;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      card.addEventListener('dragend', () => {
+        kbDragId = null;
+        card.classList.remove('dragging');
+      });
+    });
+  });
+}
+
+function buildKbCard(lead) {
+  const dateStr = new Date(lead.created_at).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit' });
+  const interest = INTEREST_LABELS[lead.interest] || lead.interest || '—';
+  const waPhone  = '55' + lead.phone.replace(/\D/g, '');
+  return `
+    <div class="kb-card kb-card--${lead.status || 'novo'}" draggable="true" data-id="${lead.id}">
+      <div class="kb-card__name">${lead.name}</div>
+      <div class="kb-card__phone">${lead.phone}</div>
+      <div class="kb-card__interest">${interest}</div>
+      <div class="kb-card__footer">
+        <span class="kb-card__date">${dateStr}</span>
+        <div class="kb-card__actions">
+          <button class="kb-card__btn kb-card__btn--detail" onclick="openLead(${lead.id})">Ver</button>
+          <a class="kb-card__btn kb-card__btn--wa" href="https://wa.me/${waPhone}" target="_blank">WA</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ── Label editor ───────────────────────────── */
+function openEditLabel(status) {
+  kbEditStatus = status;
+  const labels = getKbLabels();
+  document.getElementById('editLabelInput').value = labels[status] || KB_DEFAULT_LABELS[status];
+  document.getElementById('editLabelModal').classList.add('open');
+  setTimeout(() => document.getElementById('editLabelInput').focus(), 80);
+}
+
+function closeEditLabel() {
+  document.getElementById('editLabelModal').classList.remove('open');
+  kbEditStatus = null;
+}
+
+function saveKanbanLabel() {
+  if (!kbEditStatus) return;
+  const val = document.getElementById('editLabelInput').value.trim();
+  if (!val) return;
+  const labels = getKbLabels();
+  labels[kbEditStatus] = val;
+  localStorage.setItem('kb_labels', JSON.stringify(labels));
+  closeEditLabel();
+  renderKanban();
+  toast('Etapa renomeada!');
+}
+
+function resetKanbanLabel() {
+  if (!kbEditStatus) return;
+  const labels = getKbLabels();
+  delete labels[kbEditStatus];
+  localStorage.setItem('kb_labels', JSON.stringify(labels));
+  closeEditLabel();
+  renderKanban();
+  toast('Nome redefinido para o padrão.');
+}
+
+document.getElementById('editLabelModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('editLabelModal')) closeEditLabel();
+});
+
+// Atualiza kanban após salvar lead pelo modal
+const _origSaveLead = saveLead;
+saveLead = async function() {
+  await _origSaveLead();
+  // Re-sync cache local
+  if (document.getElementById('kanbanPage').classList.contains('active')) {
+    await loadKanban();
+  }
+};
 
 /* ============================================================
    INIT
