@@ -1,4 +1,4 @@
-﻿// Configuração PM2 – gerenciador de processos para VPS
+// Configuração PM2 – gerenciador de processos para VPS
 // Uso:
 //   npm install -g pm2
 //   pm2 start ecosystem.config.js

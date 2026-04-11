@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 const BASE = 'https://curyrj.com.br/wp-content/uploads';
 const BML  = 'https://bmlancamentos.com.br/images/empreendimentos/279';
