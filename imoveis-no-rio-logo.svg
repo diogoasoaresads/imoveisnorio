@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">Logo Imóveis no Rio</title>
+  <desc id="desc">Logo horizontal com ícone de casa e marcador de localização em azul e verde, acompanhado do texto Imóveis no Rio.</desc>
+
+  <defs>
+    <style>
+      .blue { fill: #1E40AF; }
+      .green { fill: #22C55E; }
+      .dark { fill: #374151; }
+      .title { font-family: Arial, Helvetica, sans-serif; font-size: 96px; font-weight: 700; letter-spacing: 1px; }
+      .subtitle { font-family: Arial, Helvetica, sans-serif; font-size: 48px; font-weight: 600; letter-spacing: 0.5px; }
+    </style>
+  </defs>
+
+  <!-- Icon -->
+  <g transform="translate(36,40)">
+    <!-- Pin -->
+    <path class="blue" d="M116 0C73.1 0 38 35.1 38 78c0 56.2 64.6 131.8 73.8 142.3 2.1 2.4 5.3 3.7 8.6 3.7s6.5-1.4 8.6-3.7C138.2 209.8 202.8 134.2 202.8 78 202.8 35.1 167.7 0 124.8 0H116z"/>
+    <!-- House body -->
+    <path fill="#ffffff" d="M73 93.5 119 56l46 37.5v52.5c0 4.4-3.6 8-8 8H81c-4.4 0-8-3.6-8-8V93.5z"/>
+    <!-- Roof -->
+    <path class="green" d="M63.5 95.5c-3.4 0-5.4-4.2-3-6.9l55.1-45.1a7.2 7.2 0 0 1 9.1 0l55.1 45.1c2.4 2.7.4 6.9-3 6.9h-13.3L120.2 60 76.8 95.5H63.5z"/>
+    <!-- Door -->
+    <rect class="blue" x="109" y="116" width="20" height="38" rx="4"/>
+    <!-- Window -->
+    <rect class="green" x="84" y="112" width="16" height="16" rx="3"/>
+    <rect class="green" x="140" y="112" width="16" height="16" rx="3"/>
+  </g>
+
+  <!-- Text -->
+  <text x="290" y="138" class="title blue">Imóveis</text>
+  <text x="292" y="214" class="subtitle dark">no Rio</text>
+
+  <!-- Accent line -->
+  <rect x="292" y="236" width="220" height="10" rx="5" class="green"/>
+</svg>
