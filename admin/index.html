@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Cury – CRM Admin</title>
+  <title>Imóveis no Rio – CRM Admin</title>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -814,7 +814,7 @@
               </div>
               <div class="field">
                 <label>E-mail de envio (from)</label>
-                <input type="email" id="cfg-email-from" placeholder="Portal Cury &lt;noreply@...&gt;" />
+                <input type="email" id="cfg-email-from" placeholder="Imóveis no Rio &lt;noreply@...&gt;" />
               </div>
               <div class="field">
                 <label>Servidor SMTP</label>
@@ -940,7 +940,7 @@
               </div>
               <div class="field form-full">
                 <label>Mensagem (template)</label>
-                <textarea id="cfg-evolution-message" rows="6" placeholder="🔔 *Novo Lead — Portal Cury*&#10;&#10;👤 *Nome:* {{name}}&#10;📱 *Telefone:* {{phone}}&#10;🏢 *Empreendimento:* {{interest}}&#10;⏰ {{created_at}}"></textarea>
+                <textarea id="cfg-evolution-message" rows="6" placeholder="🔔 *Novo Lead — Imóveis no Rio*&#10;&#10;👤 *Nome:* {{name}}&#10;📱 *Telefone:* {{phone}}&#10;🏢 *Empreendimento:* {{interest}}&#10;⏰ {{created_at}}"></textarea>
                 <p class="hint">
                   Variáveis: <code>{{name}}</code> <code>{{phone}}</code> <code>{{email}}</code>
                   <code>{{email_line}}</code> <code>{{interest}}</code> <code>{{created_at}}</code>
@@ -1556,7 +1556,7 @@ async function exportExcel() {
     const blob = await res.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `leads_portalcury_${new Date().toISOString().slice(0,10)}.xlsx`;
+    a.download = `leads_imoveisnorio_${new Date().toISOString().slice(0,10)}.xlsx`;
     a.click();
     toast('Planilha Excel gerada com sucesso!', 'success');
   } catch (e) { toast(e.message, 'error'); }

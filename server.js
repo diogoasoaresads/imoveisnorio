@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 
 const express = require('express');
 const Database = require('better-sqlite3');
@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname), { index: false }));
 const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-const db = new Database(path.join(dataDir, 'portalcury.db'));
+const db = new Database(path.join(dataDir, 'imoveisnorio.db'));
 
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
@@ -102,7 +102,7 @@ const DEFAULT_CONFIG = {
   email_smtp_secure:'false',
   email_smtp_user:  '',
   email_smtp_pass:  '',
-  email_from:       'Portal Cury <noreply@portalcury.com.br>',
+  email_from:       'Imóveis no Rio <noreply@imoveisnorio.com.br>',
   email_to:         '',
 
   // Índices de rotação de filas (interno)
@@ -115,7 +115,7 @@ const DEFAULT_CONFIG = {
   evolution_instance: '',       // Nome da instância no Evolution
   evolution_apikey:   '',       // Global API Key ou Instance API Key
   evolution_phone:    '',       // Número destino com DDI (ex: 5521999999999)
-  evolution_message:  '🔔 *Novo Lead — Portal Cury*\n\n👤 *Nome:* {{name}}\n📱 *Telefone:* {{phone}}{{email_line}}\n🏢 *Empreendimento:* {{interest}}\n⏰ {{created_at}}',
+  evolution_message:  '🔔 *Novo Lead — Imóveis no Rio*\n\n👤 *Nome:* {{name}}\n📱 *Telefone:* {{phone}}{{email_line}}\n🏢 *Empreendimento:* {{interest}}\n⏰ {{created_at}}',
 
   // Google Ads
   gads_tag_id:           '',   // Ex: AW-123456789
@@ -240,14 +240,14 @@ async function notifyEmail(lead, cfg) {
   const waLink = `https://wa.me/55${lead.phone.replace(/\D/g, '')}`;
 
   await transport.sendMail({
-    from:    cfg.email_from || 'Portal Cury <noreply@portalcury.com.br>',
+    from:    cfg.email_from || 'Imóveis no Rio <noreply@imoveisnorio.com.br>',
     to:      cfg.email_to,
-    subject: `🏠 Novo Lead: ${lead.name} – Portal Cury`,
+    subject: `🏠 Novo Lead: ${lead.name} – Imóveis no Rio`,
     html: `
 <!DOCTYPE html><html lang="pt-BR"><body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif">
 <div style="max-width:600px;margin:24px auto">
   <div style="background:#C8232A;padding:28px 32px;border-radius:10px 10px 0 0">
-    <h1 style="color:#fff;margin:0;font-size:22px">🔔 Novo Lead — Portal Cury</h1>
+    <h1 style="color:#fff;margin:0;font-size:22px">🔔 Novo Lead — Imóveis no Rio</h1>
   </div>
   <div style="background:#fff;padding:32px;border-radius:0 0 10px 10px;border:1px solid #e5e5e5">
     <table style="width:100%;border-collapse:collapse">
@@ -275,7 +275,7 @@ async function notifyEmail(lead, cfg) {
       <a href="tel:${lead.phone}" style="background:#C8232A;color:#fff;padding:13px 28px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block">Ligar</a>
     </div>
   </div>
-  <p style="text-align:center;color:#bbb;font-size:12px;margin-top:16px">Portal Cury · Notificação automática</p>
+  <p style="text-align:center;color:#bbb;font-size:12px;margin-top:16px">Imóveis no Rio · Notificação automática</p>
 </div></body></html>`,
   });
 }
@@ -509,7 +509,7 @@ app.get('/api/leads/export-excel', auth, async (req, res) => {
   const STATUS_COLORS = { novo: 'FF3B82F6', em_atendimento: 'FFFBBF24', convertido: 'FF22C55E', perdido: 'FFEF4444' };
 
   const wb = new ExcelJS.Workbook();
-  wb.creator = 'Portal Cury CRM';
+  wb.creator = 'Imóveis no Rio CRM';
   wb.created = new Date();
 
   const ws = wb.addWorksheet('Leads', { views: [{ state: 'frozen', ySplit: 3 }] });
@@ -517,7 +517,7 @@ app.get('/api/leads/export-excel', auth, async (req, res) => {
   // ── Linha 1: título principal ──────────────────────────────────
   ws.mergeCells('A1:I1');
   const titleCell = ws.getCell('A1');
-  titleCell.value = `Portal Cury – Relatório de Leads   (${new Date().toLocaleDateString('pt-BR')})`;
+  titleCell.value = `Imóveis no Rio – Relatório de Leads   (${new Date().toLocaleDateString('pt-BR')})`;
   titleCell.font = { name: 'Calibri', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
   titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
   titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A5F' } };
@@ -599,13 +599,13 @@ app.get('/api/leads/export-excel', auth, async (req, res) => {
   const footerRowNum = leads.length + 4;
   ws.mergeCells(`A${footerRowNum}:I${footerRowNum}`);
   const footerCell = ws.getCell(`A${footerRowNum}`);
-  footerCell.value = 'Portal Cury CRM  •  Relatório gerado automaticamente';
+  footerCell.value = 'Imóveis no Rio CRM  •  Relatório gerado automaticamente';
   footerCell.font = { name: 'Calibri', size: 9, italic: true, color: { argb: 'FF6B7280' } };
   footerCell.alignment = { horizontal: 'center', vertical: 'middle' };
   footerCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0F4FB' } };
   ws.getRow(footerRowNum).height = 18;
 
-  const filename = `leads_portalcury_${new Date().toISOString().slice(0,10)}.xlsx`;
+  const filename = `leads_imoveisnorio_${new Date().toISOString().slice(0,10)}.xlsx`;
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
   await wb.xlsx.write(res);
@@ -770,7 +770,7 @@ app.put('/api/auth/password', auth, (req, res) => {
 // ============================================================
 const FAKE_LEAD = {
   name: 'Lead de Teste', phone: '(21) 9 9999-9999',
-  email: 'teste@portalcury.com.br', interest: 'luzes-do-rio',
+  email: 'teste@imoveisnorio.com.br', interest: 'luzes-do-rio',
   message: 'Mensagem de teste.', created_at: new Date().toISOString(),
 };
 
@@ -824,7 +824,7 @@ app.get('/admin/*', (_req, res) => res.sendFile(path.join(__dirname, 'admin', 'i
 // START
 // ============================================================
 app.listen(PORT, () => {
-  console.log(`\n✅ Portal Cury rodando em http://localhost:${PORT}`);
+  console.log(`\n✅ Imóveis no Rio rodando em http://localhost:${PORT}`);
   console.log(`   Admin CRM: http://localhost:${PORT}/admin`);
   console.log(`   Login padrão: admin / admin123\n`);
 });

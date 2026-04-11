@@ -1,7 +1,7 @@
-{
-  "name": "portalcury",
+﻿{
+  "name": "imoveisnorio",
   "version": "1.0.0",
-  "description": "Portal Cury – Landing Page + CRM",
+  "description": "Imóveis no Rio – Landing Page + CRM",
   "main": "server.js",
   "engines": {
     "node": ">=18.0.0"

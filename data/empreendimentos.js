@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 const BASE = 'https://curyrj.com.br/wp-content/uploads';
 const BML  = 'https://bmlancamentos.com.br/images/empreendimentos/279';
@@ -24,7 +24,7 @@ const empreendimentos = [
       'Playground', 'Brinquedoteca', 'Oficina compartilhada', 'Segurança 24h',
     ],
     nearby: ['Metrô São Cristóvão', 'Quinta da Boa Vista', 'AquaRio', 'Rio Star', 'Feira de São Cristóvão', 'Ponte Rio-Niterói'],
-    seoTitle: 'Luzes do Rio | Apartamentos em São Cristóvão – Portal Cury',
+    seoTitle: 'Luzes do Rio | Apartamentos em São Cristóvão – Imóveis no Rio',
     seoDesc: 'Luzes do Rio: 1 e 2 quartos de 32 a 38 m² em São Cristóvão, Rio de Janeiro. E-bike inclusa, a partir de R$ 300.532, MCMV, entrega dez/2029. Simule agora.',
     heroImage: `${BASE}/2025/12/lancamento_cury_luzes_do_rio_residencial_porto_maravilha-5-1240x720.jpeg`,
     gallery: [
@@ -56,7 +56,7 @@ const empreendimentos = [
       'Pet care', 'Pet place', 'Coworking', 'Segurança 24h',
     ],
     nearby: ['400m Metrô/Trem São Cristóvão', 'Hospital Quinta D\'Or', 'Quinta da Boa Vista', 'BRT e ônibus'],
-    seoTitle: 'Residencial Cartola | Apartamentos em São Cristóvão – Portal Cury',
+    seoTitle: 'Residencial Cartola | Apartamentos em São Cristóvão – Imóveis no Rio',
     seoDesc: 'Residencial Cartola: 1 e 2 quartos de 31 a 52 m² em São Cristóvão, a 400m do metrô. A partir de R$ 296.000. Minha Casa Minha Vida. Simule agora.',
     heroImage: `${BASE}/2025/07/residencial_cartola_cury_sao_cristovao-2-1240x720.png`,
     gallery: [
@@ -89,8 +89,8 @@ const empreendimentos = [
       'Unidades garden', 'Varandas', 'Opções com suíte', 'Segurança 24h',
     ],
     nearby: ['Metrô Irajá', 'Via Dutra', 'Avenida Brasil', 'BRT', 'Carioca Shopping', 'Hospital Silva Telles'],
-    seoTitle: 'Nova Norte Raízes | Apartamentos em Irajá – Portal Cury',
-    seoDesc: 'Nova Norte Raízes: 2 e 3 quartos de 36 a 62 m² em Irajá, Rio de Janeiro. A partir de R$ 258.184. MCMV, próximo ao metrô. Simule agora com o Portal Cury.',
+    seoTitle: 'Nova Norte Raízes | Apartamentos em Irajá – Imóveis no Rio',
+    seoDesc: 'Nova Norte Raízes: 2 e 3 quartos de 36 a 62 m² em Irajá, Rio de Janeiro. A partir de R$ 258.184. MCMV, próximo ao metrô. Simule agora com o Imóveis no Rio.',
     heroImage: `${BML}/1.webp`,
     gallery: [
       `${BML}/2.jpeg`,
@@ -121,7 +121,7 @@ const empreendimentos = [
       'Salão de festas', 'Pet care', 'Coworking', 'Lavanderia', 'Bicicletário', 'Segurança 24h',
     ],
     nearby: ['Shopping Plaza Niterói', 'Rodoviária de Niterói', 'CCR Barcas', 'UFF', 'MAC-Niterói', 'Caminho Niemeyer'],
-    seoTitle: 'Caminhos da Guanabara | Apartamentos em Niterói – Portal Cury',
+    seoTitle: 'Caminhos da Guanabara | Apartamentos em Niterói – Imóveis no Rio',
     seoDesc: 'Caminhos da Guanabara: 2 quartos de 42 m² em Niterói com vista para a Baía de Guanabara. A partir de R$ 381.847. Em frente ao Caminho Niemeyer. Simule agora.',
     heroImage: `${BASE}/2025/01/lancamento_cury_caminhos_da_guanabara_niteroi-21-1240x720.png`,
     gallery: [
@@ -154,7 +154,7 @@ const empreendimentos = [
       'Salão de festas', 'Espaço gourmet', 'VLT na porta', 'Segurança 24h',
     ],
     nearby: ['VLT na porta', 'Museu do Amanhã', 'Boulevard Olímpico', 'Yup Star', 'AquaRio', 'MAR'],
-    seoTitle: 'Farol da Guanabara | Apartamentos no Porto Maravilha – Portal Cury',
+    seoTitle: 'Farol da Guanabara | Apartamentos no Porto Maravilha – Imóveis no Rio',
     seoDesc: 'Farol da Guanabara: studios a 3 quartos de 32 a 79 m² no Porto Maravilha. A partir de R$ 374.300. Vista para a Baía, VLT na porta, MCMV. Simule agora.',
     heroImage: `${BASE}/2025/09/farol-da-guanabara-porto-maravilha-4-1240x720.png`,
     gallery: [
@@ -187,7 +187,7 @@ const empreendimentos = [
       'Boulevard de lojas 3.000 m²', 'VLT na porta', 'Unidades garden', 'Segurança 24h',
     ],
     nearby: ['VLT na porta', 'Rodoviária Novo Rio', 'Cidade do Samba', 'Sambódromo', 'Metrô Cidade Nova', 'Museu do Amanhã'],
-    seoTitle: 'Residencial Pixinguinha | Apartamentos no Porto Maravilha – Portal Cury',
+    seoTitle: 'Residencial Pixinguinha | Apartamentos no Porto Maravilha – Imóveis no Rio',
     seoDesc: 'Residencial Pixinguinha: studios a 3 quartos de 30 a 65 m² no Porto Maravilha. A partir de R$ 299.900. MCMV, isenção IPTU, VLT na porta. Simule agora.',
     heroImage: `${BASE}/2025/04/residencial_pixinguinha_cury_porto_maravilha-3-1-1240x720.png`,
     gallery: [
@@ -212,8 +212,8 @@ const empreendimentos = [
     badgeClass: 'badge--em-breve',
     tagline: 'Uma nova história de morar bem em Niterói',
     description: 'A Cury chega a Niterói com um lançamento exclusivo para quem busca qualidade de vida, segurança e excelente infraestrutura. Vista para a Baía de Guanabara, fácil acesso ao Rio de Janeiro e tudo que a melhor cidade do estado tem a oferecer. Cadastre-se agora e seja o primeiro a receber todas as informações.',
-    seoTitle: 'Cury Niterói | Em Breve – Portal Cury',
-    seoDesc: 'Novo lançamento Cury em Niterói. Cadastre-se e antecipe seu lançamento com condições exclusivas de pré-lançamento. Em breve no Portal Cury.',
+    seoTitle: 'Cury Niterói | Em Breve – Imóveis no Rio',
+    seoDesc: 'Novo lançamento Cury em Niterói. Cadastre-se e antecipe seu lançamento com condições exclusivas de pré-lançamento. Em breve no Imóveis no Rio.',
     heroImage: '',
     heroGradient: 'linear-gradient(135deg, #00447d 0%, #006bad 50%, #ea723d 100%)',
     benefits: [
@@ -238,8 +238,8 @@ const empreendimentos = [
     badgeClass: 'badge--em-breve',
     tagline: 'Conectado a tudo que importa na Zona Norte',
     description: 'A Cury expande sua presença na Zona Norte do Rio com um novo lançamento em Piedade. Localização estratégica com acesso facilitado ao metrô, BRT, Avenida Brasil e Via Dutra. Morar bem, perto de tudo, com as condições especiais Cury e Minha Casa Minha Vida. Cadastre-se e antecipe o lançamento.',
-    seoTitle: 'Cury Piedade | Em Breve – Portal Cury',
-    seoDesc: 'Novo lançamento Cury em Piedade, Zona Norte do Rio de Janeiro. Pré-cadastro com condições exclusivas. MCMV. Em breve no Portal Cury.',
+    seoTitle: 'Cury Piedade | Em Breve – Imóveis no Rio',
+    seoDesc: 'Novo lançamento Cury em Piedade, Zona Norte do Rio de Janeiro. Pré-cadastro com condições exclusivas. MCMV. Em breve no Imóveis no Rio.',
     heroImage: '',
     heroGradient: 'linear-gradient(135deg, #00447d 0%, #1a5c94 50%, #ea723d 100%)',
     benefits: [
