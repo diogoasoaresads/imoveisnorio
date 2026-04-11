@@ -515,9 +515,14 @@ const empreendimentos = [
     nearby: ['Shopping Park Jacarepaguá', 'Bosque da Freguesia', 'Linha Amarela', 'Barra da Tijuca'],
     seoTitle: 'My Jacarepaguá | Zona Oeste – Imóveis no Rio',
     seoDesc: 'My Jacarepaguá Life & Mood: 1 e 2 quartos em Jacarepaguá. A partir de R$ 241.390. MCMV, garden com quintal privativo.',
-    heroImage: `${BASE}/2022/10/apartamento-cury-orla-recreio-1-1240x720.png`,
+    heroImage: `${BASE}/2022/10/WhatsApp-Image-2022-09-05-at-09.32.15-918x720.jpeg`,
     gallery: [
-      `${BASE}/2022/10/apartamento-cury-orla-recreio-9-1240x720.png`,
+      `${BASE}/2022/10/WhatsApp-Image-2022-09-05-at-09.32.16.jpeg`,
+      `${BASE}/2022/10/WhatsApp-Image-2022-09-05-at-09.32.16-1.jpeg`,
+      `${BASE}/2022/10/WhatsApp-Image-2022-09-05-at-09.32.16-2.jpeg`,
+      `${BASE}/2022/10/WhatsApp-Image-2022-09-05-at-09.32.16-3.jpeg`,
+      `${BASE}/2022/10/WhatsApp-Image-2022-09-05-at-09.32.16-4.jpeg`,
+      `${BASE}/2022/10/WhatsApp-Image-2022-09-05-at-09.32.16-5.jpeg`,
     ],
   },
 ];

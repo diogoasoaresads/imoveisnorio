@@ -215,6 +215,16 @@
     observer.observe(el);
   });
 
+  /* ---- Clickable card photo – opens development page ---- */
+  document.querySelectorAll('.emp-card').forEach(card => {
+    const link = card.querySelector('a.btn--outline');
+    if (!link) return;
+    const imgWrap = card.querySelector('.emp-card__img-wrap');
+    if (!imgWrap) return;
+    imgWrap.style.cursor = 'pointer';
+    imgWrap.addEventListener('click', () => { window.location.href = link.href; });
+  });
+
   /* ---- Announce filter changes to screen readers ---- */
   const liveRegion = document.createElement('div');
   liveRegion.setAttribute('aria-live', 'polite');
