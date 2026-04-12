@@ -1,7 +1,7 @@
 # ============================================================
-# NGINX – Configuração para Portal Cury na VPS
-# Coloque este arquivo em: /etc/nginx/sites-available/portalcury
-# Crie o symlink: ln -s /etc/nginx/sites-available/portalcury /etc/nginx/sites-enabled/
+# NGINX – Configuração para Imóveis no Rio na VPS
+# Coloque este arquivo em: /etc/nginx/sites-available/imoveisnorio
+# Crie o symlink: ln -s /etc/nginx/sites-available/imoveisnorio /etc/nginx/sites-enabled/
 # ============================================================
 
 server {
