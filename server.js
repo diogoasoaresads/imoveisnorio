@@ -186,7 +186,13 @@ function fillTemplate(template, vars) {
 
 // ---- Round-robin attendant queue ----
 function nextAttendant(queueKey) {
-  const list = db.prepare('SELECT * FROM attendants WHERE active = 1 ORDER BY id').all();
+  let list;
+  try {
+    list = db.prepare('SELECT * FROM attendants WHERE active = 1 ORDER BY id').all();
+  } catch {
+    // coluna ainda não existe no banco (migração pendente) — ignora distribuição
+    return null;
+  }
   if (!list.length) return null;
   const row = db.prepare('SELECT value FROM config WHERE key = ?').get(queueKey);
   let idx = parseInt(row?.value || '0');
@@ -384,16 +390,22 @@ app.post('/api/leads', rateLimit(5 * 60 * 1000, 10), (req, res) => {
     return res.status(400).json({ error: 'Nome e telefone são obrigatórios.' });
   }
 
-  const attendant = nextAttendant('form_queue_idx');
+  let attendant = null;
+  try { attendant = nextAttendant('form_queue_idx'); } catch {}
 
-  const r = db.prepare(`
-    INSERT INTO leads (name, phone, email, interest, message, source, attendant_id)
-    VALUES (?, ?, ?, ?, ?, 'landing_page', ?)
-  `).run(name.trim(), phone.trim(), email.trim(), interest.trim(), message.trim(), attendant?.id || null);
+  try {
+    const r = db.prepare(`
+      INSERT INTO leads (name, phone, email, interest, message, source, attendant_id)
+      VALUES (?, ?, ?, ?, ?, 'landing_page', ?)
+    `).run(name.trim(), phone.trim(), email.trim(), interest.trim(), message.trim(), attendant?.id || null);
 
-  const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(r.lastInsertRowid);
-  fireNotifications(lead, getConfig());
-  res.json({ success: true, id: lead.id });
+    const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(r.lastInsertRowid);
+    fireNotifications(lead, getConfig());
+    res.json({ success: true, id: lead.id });
+  } catch (err) {
+    console.error('[Lead form error]', err);
+    res.status(500).json({ error: 'Erro ao salvar contato. Tente novamente.' });
+  }
 });
 
 // Receber lead do WhatsApp (fila WA) — retorna URL do próximo atendente
@@ -403,20 +415,28 @@ app.post('/api/leads/wa', rateLimit(5 * 60 * 1000, 10), (req, res) => {
     return res.status(400).json({ error: 'Nome e telefone são obrigatórios.' });
   }
 
-  const attendant = nextAttendant('wa_queue_idx');
+  let attendant = null;
+  try { attendant = nextAttendant('wa_queue_idx'); } catch {}
   const cfg = getConfig();
 
-  const r = db.prepare(`
-    INSERT INTO leads (name, phone, source, attendant_id)
-    VALUES (?, ?, 'whatsapp', ?)
-  `).run(name.trim(), phone.trim(), attendant?.id || null);
+  try {
+    const r = db.prepare(`
+      INSERT INTO leads (name, phone, source, attendant_id)
+      VALUES (?, ?, 'whatsapp', ?)
+    `).run(name.trim(), phone.trim(), attendant?.id || null);
 
-  const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(r.lastInsertRowid);
-  fireNotifications(lead, cfg);
+    const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(r.lastInsertRowid);
+    fireNotifications(lead, cfg);
 
-  const waPhone = (attendant?.phone || cfg.whatsapp_number || '').replace(/\D/g, '');
-  const waMsg   = encodeURIComponent(cfg.whatsapp_message || '');
-  res.json({ success: true, id: lead.id, wa_url: `https://wa.me/${waPhone}?text=${waMsg}` });
+    const waPhone = (attendant?.phone || cfg.whatsapp_number || '').replace(/\D/g, '');
+    const waMsg   = encodeURIComponent(cfg.whatsapp_message || '');
+    res.json({ success: true, id: lead.id, wa_url: `https://wa.me/${waPhone}?text=${waMsg}` });
+  } catch (err) {
+    console.error('[Lead WA error]', err);
+    const waPhone = (cfg.whatsapp_number || '').replace(/\D/g, '');
+    const waMsg   = encodeURIComponent(cfg.whatsapp_message || '');
+    res.status(500).json({ error: 'Erro ao salvar contato.', wa_url: `https://wa.me/${waPhone}?text=${waMsg}` });
+  }
 });
 
 // ============================================================
