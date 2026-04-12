@@ -12,7 +12,7 @@ const empreendimentos = require('./data/empreendimentos');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'TROQUE_ESTA_CHAVE_EM_PRODUCAO_' + Math.random();
+const JWT_SECRET = process.env.JWT_SECRET || 'imoveisnorio-secret-key-2025-change-in-production';
 
 // ============================================================
 // TEMPLATE ENGINE
@@ -823,6 +823,26 @@ app.get('/empreendimentos/:slug', (req, res) => {
 // ============================================================
 app.get('/admin', (_req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
 app.get('/admin/*', (_req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
+
+// ============================================================
+// CATCH-ALL: rotas não encontradas → JSON (nunca HTML)
+// ============================================================
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: `Rota não encontrada: ${req.method} ${req.path}` });
+  }
+  next();
+});
+
+// Handler global de erros → sempre retorna JSON para chamadas de API
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, _next) => {
+  console.error('[Erro]', err);
+  if (req.path.startsWith('/api/')) {
+    return res.status(500).json({ error: err.message || 'Erro interno do servidor' });
+  }
+  res.status(500).send('Erro interno do servidor');
+});
 
 // ============================================================
 // START
