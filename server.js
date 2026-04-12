@@ -32,12 +32,16 @@ app.use(express.static(path.join(__dirname), { index: false }));
 // ============================================================
 // DATABASE
 // ============================================================
-// Em produção usa /data (volume persistente no EasyPanel).
-// Em desenvolvimento usa ./data local.
-const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+// DB_PATH define o caminho completo do arquivo .db (configurado no EasyPanel).
+// Fallback: ./data/imoveisnorio.db para desenvolvimento local.
+const DB_PATH = process.env.DB_PATH
+  || path.join(process.env.DATA_DIR || path.join(__dirname, 'data'), 'imoveisnorio.db');
 
-const db = new Database(path.join(dataDir, 'imoveisnorio.db'));
+const dbDir = path.dirname(DB_PATH);
+if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
+
+const db = new Database(DB_PATH);
+console.log(`[DB] Usando banco: ${DB_PATH}`);
 
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
