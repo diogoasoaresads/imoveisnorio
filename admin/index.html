@@ -1246,7 +1246,29 @@ async function api(method, path, body) {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
   };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(path, opts);
+
+  let res;
+  try {
+    res = await fetch(path, opts);
+  } catch (networkErr) {
+    throw new Error('Sem conexão com o servidor. Verifique se o serviço está online.');
+  }
+
+  // Se o token expirou, faz logout automático
+  if (res.status === 401) {
+    token = '';
+    localStorage.removeItem('crm_token');
+    document.getElementById('appPage').style.display = 'none';
+    document.getElementById('loginPage').style.display = 'flex';
+    throw new Error('Sessão expirada. Faça login novamente.');
+  }
+
+  // Verifica se a resposta é JSON antes de parsear
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error(`Erro do servidor (${res.status}). Faça login novamente ou contate o suporte.`);
+  }
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Erro desconhecido');
   return data;
@@ -1312,6 +1334,8 @@ async function checkAuth() {
   } catch {
     token = '';
     localStorage.removeItem('crm_token');
+    document.getElementById('appPage').style.display = 'none';
+    document.getElementById('loginPage').style.display = 'flex';
   }
 }
 
