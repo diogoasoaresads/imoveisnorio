@@ -82,10 +82,13 @@ db.exec(`
   );
 `);
 
-// Migrations — add columns if they don't exist yet
-['ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT \'admin\'',
- 'ALTER TABLE users ADD COLUMN attendant_id INTEGER REFERENCES attendants(id)',
- 'ALTER TABLE leads ADD COLUMN attendant_id INTEGER REFERENCES attendants(id)',
+// Migrations — add columns if they don't exist yet (errors are silently ignored = column already exists)
+[
+  'ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT \'admin\'',
+  'ALTER TABLE users ADD COLUMN attendant_id INTEGER REFERENCES attendants(id)',
+  'ALTER TABLE leads ADD COLUMN attendant_id INTEGER REFERENCES attendants(id)',
+  'ALTER TABLE attendants ADD COLUMN active INTEGER NOT NULL DEFAULT 1',
+  'ALTER TABLE attendants ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP',
 ].forEach(sql => { try { db.exec(sql); } catch {} });
 
 // ---- Default config values ----
