@@ -77,7 +77,10 @@
   /* ---- Phone Mask ---- */
   function phoneMask(input) {
     input.addEventListener('input', () => {
-      let v = input.value.replace(/\D/g, '').substring(0, 11);
+      let v = input.value.replace(/\D/g, '');
+      // Remove DDI 55 se digitado antes do DDD (ex: 5521912345678 → 21912345678)
+      if (v.length > 11 && v.startsWith('55')) v = v.slice(2);
+      v = v.substring(0, 11);
       if (v.length <= 10) {
         v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
       } else {

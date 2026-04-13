@@ -184,6 +184,13 @@ function fillTemplate(template, vars) {
   return template.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? '');
 }
 
+// ---- Normaliza telefone: remove DDI 55 se digitado antes do DDD ----
+function normalizePhone(phone) {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length > 11 && digits.startsWith('55')) return digits.slice(2);
+  return digits;
+}
+
 // ---- Round-robin attendant queue ----
 function nextAttendant(queueKey) {
   let list;
@@ -397,7 +404,7 @@ app.post('/api/leads', rateLimit(5 * 60 * 1000, 10), (req, res) => {
     const r = db.prepare(`
       INSERT INTO leads (name, phone, email, interest, message, source, attendant_id)
       VALUES (?, ?, ?, ?, ?, 'landing_page', ?)
-    `).run(name.trim(), phone.trim(), email.trim(), interest.trim(), message.trim(), attendant?.id || null);
+    `).run(name.trim(), normalizePhone(phone), email.trim(), interest.trim(), message.trim(), attendant?.id || null);
 
     const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(r.lastInsertRowid);
     fireNotifications(lead, getConfig());
@@ -423,7 +430,7 @@ app.post('/api/leads/wa', rateLimit(5 * 60 * 1000, 10), (req, res) => {
     const r = db.prepare(`
       INSERT INTO leads (name, phone, source, attendant_id)
       VALUES (?, ?, 'whatsapp', ?)
-    `).run(name.trim(), phone.trim(), attendant?.id || null);
+    `).run(name.trim(), normalizePhone(phone), attendant?.id || null);
 
     const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(r.lastInsertRowid);
     fireNotifications(lead, cfg);
