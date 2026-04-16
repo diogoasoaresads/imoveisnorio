@@ -580,7 +580,8 @@ app.get('/api/leads', auth, (req, res) => {
 
   const total = db.prepare(`SELECT COUNT(*) as n FROM leads l ${where}`).get(...params).n;
   const leads = db.prepare(`
-    SELECT l.*, a.name as attendant_name
+    SELECT l.*, a.name as attendant_name,
+           (SELECT COUNT(*) FROM lead_activities ac WHERE ac.lead_id = l.id) as activity_count
     FROM leads l LEFT JOIN attendants a ON l.attendant_id = a.id
     ${where} ORDER BY l.created_at DESC LIMIT ? OFFSET ?
   `).all(...params, parseInt(limit), offset);
