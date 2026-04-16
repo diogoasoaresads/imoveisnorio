@@ -166,7 +166,7 @@ function runMergeDuplicates() {
       const bestEmail     = allInGroup.map(l => l.email).find(e => e && e.trim()) || '';
       const latestInterest = [...allInGroup].reverse().map(l => l.interest).find(i => i && i.trim()) || '';
 
-      db.prepare(`UPDATE leads SET email = ?, interest = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`)
+      db.prepare(`UPDATE leads SET email = ?, interest = ? WHERE id = ?`)
         .run(bestEmail, latestInterest, keeper_id);
 
       for (const { id: dupe_id } of dupes) {
