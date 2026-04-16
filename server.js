@@ -101,6 +101,37 @@ db.exec(`
   'ALTER TABLE attendants ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP',
 ].forEach(sql => { try { db.exec(sql); } catch {} });
 
+// Backfill: cria atividade inicial para leads que ainda não têm nenhuma
+(function backfillActivities() {
+  try {
+    const leadsWithoutActivity = db.prepare(`
+      SELECT l.* FROM leads l
+      WHERE NOT EXISTS (
+        SELECT 1 FROM lead_activities a WHERE a.lead_id = l.id
+      )
+    `).all();
+
+    if (!leadsWithoutActivity.length) return;
+
+    const insert = db.prepare(`
+      INSERT INTO lead_activities (lead_id, type, interest, message, source, created_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+
+    const insertMany = db.transaction((leads) => {
+      for (const l of leads) {
+        const type = l.source === 'whatsapp' ? 'whatsapp' : 'form';
+        insert.run(l.id, type, l.interest || '', l.message || '', l.source || 'landing_page', l.created_at);
+      }
+    });
+
+    insertMany(leadsWithoutActivity);
+    console.log(`[DB] Backfill: ${leadsWithoutActivity.length} leads receberam atividade inicial.`);
+  } catch (e) {
+    console.error('[DB] Backfill activities error:', e.message);
+  }
+})();
+
 // ---- Default config values ----
 const DEFAULT_CONFIG = {
   // Botão WhatsApp da landing page
