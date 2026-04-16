@@ -133,58 +133,57 @@ db.exec(`
 })();
 
 // Merge: une leads duplicados (mesmo telefone) em um só, transferindo atividades
-(function mergeExistingDuplicates() {
-  try {
-    // Pega todos os telefones com mais de 1 lead
-    const dupPhones = db.prepare(`
-      SELECT replace(replace(replace(replace(replace(phone,'-',''),'(',''),')',''),' ',''),'+','') as clean_phone,
-             COUNT(*) as cnt
-      FROM leads
-      GROUP BY clean_phone
-      HAVING cnt > 1
-    `).all();
+function runMergeDuplicates() {
+  const dupPhones = db.prepare(`
+    SELECT MIN(id) as keeper_id,
+           replace(replace(replace(replace(replace(phone,'-',''),'(',''),')',''),' ',''),'+','') as clean_phone,
+           COUNT(*) as cnt
+    FROM leads
+    GROUP BY clean_phone
+    HAVING cnt > 1
+  `).all();
 
-    if (!dupPhones.length) return;
+  console.log(`[DB] Merge: ${dupPhones.length} grupo(s) de duplicados encontrado(s).`);
+  if (!dupPhones.length) return { removed: 0 };
 
-    const merge = db.transaction(() => {
-      let merged = 0;
-      for (const { clean_phone } of dupPhones) {
-        // Todos os leads com esse telefone, do mais antigo para o mais novo
-        const group = db.prepare(`
-          SELECT * FROM leads
-          WHERE replace(replace(replace(replace(replace(phone,'-',''),'(',''),')',''),' ',''),'+','') = ?
-          ORDER BY id ASC
-        `).all(clean_phone);
+  let removed = 0;
+  const mergeTx = db.transaction(() => {
+    for (const { keeper_id, clean_phone } of dupPhones) {
+      const dupes = db.prepare(`
+        SELECT id FROM leads
+        WHERE replace(replace(replace(replace(replace(phone,'-',''),'(',''),')',''),' ',''),'+','') = ?
+        AND id != ?
+      `).all(clean_phone, keeper_id);
 
-        if (group.length < 2) continue;
+      // Melhor e-mail e interesse mais recente do grupo
+      const allInGroup = db.prepare(`
+        SELECT * FROM leads
+        WHERE replace(replace(replace(replace(replace(phone,'-',''),'(',''),')',''),' ',''),'+','') = ?
+        ORDER BY id ASC
+      `).all(clean_phone);
 
-        const [keeper, ...dupes] = group;
+      const bestEmail     = allInGroup.map(l => l.email).find(e => e && e.trim()) || '';
+      const latestInterest = [...allInGroup].reverse().map(l => l.interest).find(i => i && i.trim()) || '';
 
-        // Atualiza o keeper com os dados mais completos do grupo
-        const bestEmail   = group.map(l => l.email).find(e => e && e.trim()) || keeper.email;
-        const lastInterest = [...group].reverse().map(l => l.interest).find(i => i && i.trim()) || keeper.interest;
-        const latestDate  = group[group.length - 1].updated_at || keeper.updated_at;
+      db.prepare(`UPDATE leads SET email = ?, interest = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`)
+        .run(bestEmail, latestInterest, keeper_id);
 
-        db.prepare(`
-          UPDATE leads SET email = ?, interest = ?, updated_at = ? WHERE id = ?
-        `).run(bestEmail, lastInterest, latestDate, keeper.id);
-
-        for (const dupe of dupes) {
-          // Transfere atividades do duplicado para o keeper
-          db.prepare(`UPDATE lead_activities SET lead_id = ? WHERE lead_id = ?`).run(keeper.id, dupe.id);
-          // Remove o duplicado
-          db.prepare(`DELETE FROM leads WHERE id = ?`).run(dupe.id);
-          merged++;
-        }
+      for (const { id: dupe_id } of dupes) {
+        db.prepare(`UPDATE lead_activities SET lead_id = ? WHERE lead_id = ?`).run(keeper_id, dupe_id);
+        db.prepare(`DELETE FROM leads WHERE id = ?`).run(dupe_id);
+        removed++;
+        console.log(`[DB] Merge: lead #${dupe_id} unificado ao lead #${keeper_id} (tel: ${clean_phone})`);
       }
-      if (merged) console.log(`[DB] Merge: ${merged} leads duplicados removidos e unificados.`);
-    });
+    }
+  });
 
-    merge();
-  } catch (e) {
-    console.error('[DB] Merge duplicates error:', e.message);
-  }
-})();
+  mergeTx();
+  console.log(`[DB] Merge concluído: ${removed} duplicado(s) removido(s).`);
+  return { removed };
+}
+
+// Roda automaticamente na inicialização
+try { runMergeDuplicates(); } catch (e) { console.error('[DB] Merge error:', e.message); }
 
 // ---- Default config values ----
 const DEFAULT_CONFIG = {
@@ -953,6 +952,18 @@ app.put('/api/auth/password', auth, (req, res) => {
   }
   db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(bcrypt.hashSync(new_password, 10), req.user.id);
   res.json({ success: true });
+});
+
+// ============================================================
+// ROUTE — MERGE MANUAL (admin)
+// ============================================================
+app.post('/api/admin/merge-leads', auth, adminOnly, (req, res) => {
+  try {
+    const result = runMergeDuplicates();
+    res.json({ success: true, ...result });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ============================================================
