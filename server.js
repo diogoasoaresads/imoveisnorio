@@ -132,6 +132,60 @@ db.exec(`
   }
 })();
 
+// Merge: une leads duplicados (mesmo telefone) em um só, transferindo atividades
+(function mergeExistingDuplicates() {
+  try {
+    // Pega todos os telefones com mais de 1 lead
+    const dupPhones = db.prepare(`
+      SELECT replace(replace(replace(replace(replace(phone,'-',''),'(',''),')',''),' ',''),'+','') as clean_phone,
+             COUNT(*) as cnt
+      FROM leads
+      GROUP BY clean_phone
+      HAVING cnt > 1
+    `).all();
+
+    if (!dupPhones.length) return;
+
+    const merge = db.transaction(() => {
+      let merged = 0;
+      for (const { clean_phone } of dupPhones) {
+        // Todos os leads com esse telefone, do mais antigo para o mais novo
+        const group = db.prepare(`
+          SELECT * FROM leads
+          WHERE replace(replace(replace(replace(replace(phone,'-',''),'(',''),')',''),' ',''),'+','') = ?
+          ORDER BY id ASC
+        `).all(clean_phone);
+
+        if (group.length < 2) continue;
+
+        const [keeper, ...dupes] = group;
+
+        // Atualiza o keeper com os dados mais completos do grupo
+        const bestEmail   = group.map(l => l.email).find(e => e && e.trim()) || keeper.email;
+        const lastInterest = [...group].reverse().map(l => l.interest).find(i => i && i.trim()) || keeper.interest;
+        const latestDate  = group[group.length - 1].updated_at || keeper.updated_at;
+
+        db.prepare(`
+          UPDATE leads SET email = ?, interest = ?, updated_at = ? WHERE id = ?
+        `).run(bestEmail, lastInterest, latestDate, keeper.id);
+
+        for (const dupe of dupes) {
+          // Transfere atividades do duplicado para o keeper
+          db.prepare(`UPDATE lead_activities SET lead_id = ? WHERE lead_id = ?`).run(keeper.id, dupe.id);
+          // Remove o duplicado
+          db.prepare(`DELETE FROM leads WHERE id = ?`).run(dupe.id);
+          merged++;
+        }
+      }
+      if (merged) console.log(`[DB] Merge: ${merged} leads duplicados removidos e unificados.`);
+    });
+
+    merge();
+  } catch (e) {
+    console.error('[DB] Merge duplicates error:', e.message);
+  }
+})();
+
 // ---- Default config values ----
 const DEFAULT_CONFIG = {
   // Botão WhatsApp da landing page
