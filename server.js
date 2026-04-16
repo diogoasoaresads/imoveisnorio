@@ -80,6 +80,16 @@ db.exec(`
     password_hash TEXT NOT NULL,
     created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS lead_activities (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    lead_id    INTEGER NOT NULL,
+    type       TEXT NOT NULL DEFAULT 'form',
+    interest   TEXT DEFAULT '',
+    message    TEXT DEFAULT '',
+    source     TEXT DEFAULT '',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Migrations — add columns if they don't exist yet (errors are silently ignored = column already exists)
@@ -390,6 +400,59 @@ app.get('/api/public-config', (_req, res) => {
   });
 });
 
+function upsertLead({ name, phone, email = '', interest = '', message = '', source = 'landing_page', attendant_id = null }) {
+  const cleanPhone = normalizePhone(phone);
+  const cleanEmail = email.trim().toLowerCase();
+
+  // Busca por telefone (dígitos iguais) ou email
+  let existing = db.prepare(
+    "SELECT * FROM leads WHERE replace(replace(replace(replace(replace(phone,'-',''),'(',''),')',''),' ',''),'+','') = ? LIMIT 1"
+  ).get(cleanPhone);
+
+  if (!existing && cleanEmail) {
+    existing = db.prepare(
+      "SELECT * FROM leads WHERE lower(trim(email)) = ? AND email != '' LIMIT 1"
+    ).get(cleanEmail);
+  }
+
+  if (existing) {
+    // Atualiza campos do lead
+    db.prepare(`
+      UPDATE leads SET
+        name      = ?,
+        email     = CASE WHEN (email IS NULL OR email = '') THEN ? ELSE email END,
+        interest  = CASE WHEN ? != '' THEN ? ELSE interest END,
+        updated_at = CURRENT_TIMESTAMP,
+        attendant_id = CASE WHEN attendant_id IS NULL AND ? IS NOT NULL THEN ? ELSE attendant_id END
+      WHERE id = ?
+    `).run(name.trim(), cleanEmail, interest.trim(), interest.trim(), attendant_id, attendant_id, existing.id);
+
+    // Registra atividade
+    db.prepare(`
+      INSERT INTO lead_activities (lead_id, type, interest, message, source)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(existing.id, source === 'whatsapp' ? 'whatsapp' : 'form', interest.trim(), message.trim(), source);
+
+    return db.prepare('SELECT * FROM leads WHERE id = ?').get(existing.id);
+  } else {
+    // Cria novo lead
+    const r = db.prepare(`
+      INSERT INTO leads (name, phone, email, interest, message, source, attendant_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(name.trim(), cleanPhone, cleanEmail, interest.trim(), message.trim(), source, attendant_id);
+
+    const newLead = db.prepare('SELECT * FROM leads WHERE id = ?').get(r.lastInsertRowid);
+
+    // Registra primeira atividade
+    db.prepare(`
+      INSERT INTO lead_activities (lead_id, type, interest, message, source)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(newLead.id, source === 'whatsapp' ? 'whatsapp' : 'form', interest.trim(), message.trim(), source);
+
+    return newLead;
+  }
+}
+
 // Receber lead do formulário (fila form)
 app.post('/api/leads', rateLimit(5 * 60 * 1000, 10), (req, res) => {
   const { name, phone, email = '', interest = '', message = '' } = req.body;
@@ -401,12 +464,7 @@ app.post('/api/leads', rateLimit(5 * 60 * 1000, 10), (req, res) => {
   try { attendant = nextAttendant('form_queue_idx'); } catch {}
 
   try {
-    const r = db.prepare(`
-      INSERT INTO leads (name, phone, email, interest, message, source, attendant_id)
-      VALUES (?, ?, ?, ?, ?, 'landing_page', ?)
-    `).run(name.trim(), normalizePhone(phone), email.trim(), interest.trim(), message.trim(), attendant?.id || null);
-
-    const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(r.lastInsertRowid);
+    const lead = upsertLead({ name, phone, email, interest, message, source: 'landing_page', attendant_id: attendant?.id || null });
     fireNotifications(lead, getConfig());
     res.json({ success: true, id: lead.id });
   } catch (err) {
@@ -427,12 +485,7 @@ app.post('/api/leads/wa', rateLimit(5 * 60 * 1000, 10), (req, res) => {
   const cfg = getConfig();
 
   try {
-    const r = db.prepare(`
-      INSERT INTO leads (name, phone, source, attendant_id)
-      VALUES (?, ?, 'whatsapp', ?)
-    `).run(name.trim(), normalizePhone(phone), attendant?.id || null);
-
-    const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(r.lastInsertRowid);
+    const lead = upsertLead({ name, phone, source: 'whatsapp', attendant_id: attendant?.id || null });
     fireNotifications(lead, cfg);
 
     const waPhone = (attendant?.phone || cfg.whatsapp_number || '').replace(/\D/g, '');
@@ -668,6 +721,23 @@ app.get('/api/leads/stats', auth, (req, res) => {
   const today = db.prepare(`SELECT COUNT(*) as n FROM leads ${todayWhere}`).get(...params).n;
 
   res.json({ ...stats, today });
+});
+
+app.get('/api/leads/:id', auth, (req, res) => {
+  const lead = db.prepare(`
+    SELECT l.*, a.name as attendant_name
+    FROM leads l LEFT JOIN attendants a ON l.attendant_id = a.id
+    WHERE l.id = ?
+  `).get(req.params.id);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado.' });
+  res.json(lead);
+});
+
+app.get('/api/leads/:id/activities', auth, (req, res) => {
+  const activities = db.prepare(
+    'SELECT * FROM lead_activities WHERE lead_id = ? ORDER BY created_at ASC'
+  ).all(req.params.id);
+  res.json(activities);
 });
 
 app.put('/api/leads/:id', auth, (req, res) => {

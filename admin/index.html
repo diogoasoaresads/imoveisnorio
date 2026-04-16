@@ -1491,18 +1491,49 @@ function changePage(delta) {
 ============================================================ */
 async function openLead(id) {
   try {
-    const { leads } = await api('GET', `/api/leads?page=1&limit=200`);
-    const lead = leads.find(l => l.id === id);
-    if (!lead) return;
+    const [lead, activities] = await Promise.all([
+      api('GET', `/api/leads/${id}`),
+      api('GET', `/api/leads/${id}/activities`),
+    ]);
     currentLead = lead;
+
+    const SOURCE_ICON = {
+      form:      '📋',
+      whatsapp:  '💬',
+      landing_page: '📋',
+    };
+    const SOURCE_LABEL = {
+      form:         'Formulário',
+      whatsapp:     'WhatsApp',
+      landing_page: 'Formulário',
+    };
+
+    const activitiesHtml = activities.length ? `
+      <hr style="margin:18px 0;border:none;border-top:1px solid var(--border)">
+      <div style="margin-bottom:8px">
+        <strong style="font-size:.85rem;color:var(--navy)">📅 Histórico de Atividades (${activities.length})</strong>
+      </div>
+      ${activities.map(a => `
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:#f8f9fc;border-radius:8px;margin-bottom:8px;font-size:.83rem">
+          <span style="font-size:1.1rem;line-height:1.4">${SOURCE_ICON[a.type] || '📋'}</span>
+          <div style="flex:1">
+            <div style="font-weight:600;color:var(--navy)">${SOURCE_LABEL[a.type] || a.type}${a.interest ? ' · ' + (INTEREST_LABELS[a.interest] || a.interest) : ''}</div>
+            ${a.message ? `<div style="color:var(--gray);margin-top:3px">"${a.message}"</div>` : ''}
+            <div style="color:#aaa;margin-top:4px;font-size:.78rem">${formatDate(a.created_at)}</div>
+          </div>
+        </div>
+      `).join('')}
+    ` : '';
 
     document.getElementById('leadDetailContent').innerHTML = `
       <div class="detail-row"><span class="lbl">Nome</span><span class="val"><strong>${lead.name}</strong></span></div>
       <div class="detail-row"><span class="lbl">Telefone</span><span class="val"><a href="tel:${lead.phone}" style="color:var(--red)">${lead.phone}</a></span></div>
       <div class="detail-row"><span class="lbl">E-mail</span><span class="val">${lead.email || '—'}</span></div>
       <div class="detail-row"><span class="lbl">Empreendimento</span><span class="val">${INTEREST_LABELS[lead.interest] || lead.interest || '—'}</span></div>
-      <div class="detail-row"><span class="lbl">Mensagem</span><span class="val" style="white-space:pre-wrap">${lead.message || '—'}</span></div>
-      <div class="detail-row"><span class="lbl">Recebido em</span><span class="val">${formatDate(lead.created_at)}</span></div>
+      ${lead.attendant_name ? `<div class="detail-row"><span class="lbl">Atendente</span><span class="val">${lead.attendant_name}</span></div>` : ''}
+      <div class="detail-row"><span class="lbl">1º Contato</span><span class="val">${formatDate(lead.created_at)}</span></div>
+      <div class="detail-row"><span class="lbl">Última atualização</span><span class="val">${formatDate(lead.updated_at)}</span></div>
+      ${activitiesHtml}
       <hr style="margin:18px 0;border:none;border-top:1px solid var(--border)">
       <div class="field">
         <label>Status</label>
