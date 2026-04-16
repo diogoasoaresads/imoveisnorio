@@ -97,6 +97,7 @@ db.exec(`
   'ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT \'admin\'',
   'ALTER TABLE users ADD COLUMN attendant_id INTEGER REFERENCES attendants(id)',
   'ALTER TABLE leads ADD COLUMN attendant_id INTEGER REFERENCES attendants(id)',
+  'ALTER TABLE leads ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP',
   'ALTER TABLE attendants ADD COLUMN active INTEGER NOT NULL DEFAULT 1',
   'ALTER TABLE attendants ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP',
 ].forEach(sql => { try { db.exec(sql); } catch {} });
