@@ -418,6 +418,33 @@ const empreendimentos = [
     ],
   },
 
+  {
+    slug: 'orla-central',
+    name: 'Orla Central',
+    interestValue: 'orla-central',
+    bairro: 'Niterói', bairroFilter: 'niteroi',
+    city: 'Niterói',
+    address: 'Niterói – Rio de Janeiro, RJ',
+    badge: 'Lançamento', badgeClass: 'badge--launch',
+    tagline: 'Na orla de Niterói com vista para a Baía de Guanabara',
+    description: 'Orla Central é o novo lançamento de Niterói com localização privilegiada na orla, vista para a Baía de Guanabara e infraestrutura completa de lazer. Ideal para quem quer qualidade de vida com fácil acesso ao Rio.',
+    details: { rooms: 'Consulte', area: 'Consulte', delivery: 'Consulte', units: 'Unidades disponíveis' },
+    price: 'Consulte valores',
+    priceNum: 0,
+    mcmv: false,
+    financing: ['Financiamento Caixa', 'FGTS na entrada'],
+    features: ['Vista para a Baía de Guanabara', 'Localização na orla', 'Área de lazer completa', 'Segurança 24h'],
+    nearby: ['Barcas Niterói–Rio', 'Centro de Niterói', 'Caminho Niemeyer', 'MAC-Niterói'],
+    seoTitle: 'Orla Central | Niterói – Imóveis no Rio',
+    seoDesc: 'Orla Central: novo lançamento em Niterói na orla da Baía de Guanabara. Vista privilegiada, lazer completo.',
+    heroImage: '/images/orla/orla-central-1.jpeg',
+    gallery: [
+      '/images/orla/orla-central-1.jpeg',
+      '/images/orla/orla-central-2.jpeg',
+      '/images/orla/orla-central-3.jpeg',
+    ],
+  },
+
   /* ══════════════════════════════════════════
      SUDOESTE / ZONA OESTE
   ══════════════════════════════════════════ */
